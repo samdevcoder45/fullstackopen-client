@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Note from "./component/Note";
 import noteService from "./services/notes";
 import Notification from "./component/Notification";
 import Footer from "./component/Footer";
-import Form from "./component/Form";
+import Form from "./component/form/Form";
+import NoteForm from "./component/form/NoteForm";
+import Togglable from "./component/Togglable";
 
 interface INote {
   id: number;
@@ -12,27 +14,19 @@ interface INote {
 }
 export default function App() {
   const [notes, setNotes] = useState<INote[]>([]);
-  const [newNote, setNewNote] = useState("a new note...");
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState<null | string>("");
   const [user, setUser] = useState<null | object>(null);
+  const noteFormRef = useRef<React.MutableRefObject<void>>()
 
 
-  const addNote = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const noteObject = {
-      content: newNote,
-      important: Math.random() < 0.5,
-    };
-
+  const addNote = (noteObject:object) => {
+    noteFormRef?.current?.toggleVisibility()
     noteService.create(noteObject).then((returnedNote) => {
       setNotes(notes.concat(returnedNote));
-      setNewNote("");
     });
   };
 
-  const handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setNewNote(event.target.value);
 
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
 
@@ -57,12 +51,6 @@ export default function App() {
       });
   };
 
-  const noteForm = () => (
-    <form onSubmit={addNote}>
-      <input value={newNote} onChange={handleNoteChange} />
-      <button type="submit">save</button>
-    </form>
-  );
 
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
@@ -87,7 +75,11 @@ export default function App() {
       ) : (
         <div>
           <p>{user.name} logged-in</p>
-          {noteForm()}
+          <Togglable buttonLabel="new note" ref={noteFormRef}>
+            <NoteForm 
+              createNote={addNote}
+            />
+          </Togglable>
         </div>
       )}
       <div onClick={() => setShowAll(!showAll)}>

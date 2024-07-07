@@ -1,6 +1,7 @@
 import { useState } from "react";
-import loginService from "../services/login";
-import noteService from "../services/notes";
+import loginService from "../../services/login";
+import noteService from "../../services/notes";
+import PropTypes from 'prop-types'
 
 export default function Form({
   setErrorMessage,
@@ -53,4 +54,9 @@ export default function Form({
       <button type="submit">login</button>
     </form>
   );
+}
+
+Form.propTypes = {
+setUser:PropTypes.func.isRequired,
+ setErrorMessage:PropTypes.func.isRequired
 }
