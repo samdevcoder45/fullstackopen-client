@@ -8,7 +8,7 @@ export default function Footer() {
     <div style={footerStyle}>
       <br />
       <em>
-        Note aoo, Department of Computer Science, University of Helsinki 2024
+        Note app, Department of Computer Science, University of Helsinki 2024
       </em>
     </div>
   );
